@@ -41,6 +41,34 @@
             margin-bottom: 15px;
             border-radius: 5px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            line-height: 1.6;
+            max-width: 800px;
+        }
+
+        .paragraph-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .paragraph-content {
+            color: #666;
+            text-align: justify;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .contact-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .contact-label {
+            font-weight: bold;
+            color: #555;
         }
     </style>
 </head>
@@ -99,11 +127,40 @@
                         
                         <h4>Znalezione paragrafy (${data.paragraphs.length}):</h4>
                         <ul class="paragraph-list">
-                            ${data.paragraphs.map(p => `
-                                <li class="paragraph-item">
-                                    ${p}
-                                </li>
-                            `).join('')}
+                            ${data.paragraphs.map(p => {
+                                const isContactInfo = p.includes(':');
+                                
+                                if (isContactInfo) {
+                                    const [label, value] = p.split(':').map(s => s.trim());
+                                    return `
+                                        <li class="paragraph-item contact-info">
+                                            <span class="contact-label">${label}:</span>
+                                            <span>${value}</span>
+                                        </li>
+                                    `;
+                                }
+                                
+                                if (p.length > 100) {
+                                    return `
+                                        <li class="paragraph-item">
+                                            <div class="paragraph-header">
+                                                ${p.substring(0, p.indexOf(' ', 30))}...
+                                            </div>
+                                            <div class="paragraph-content">
+                                                ${p}
+                                            </div>
+                                        </li>
+                                    `;
+                                }
+                                
+                                return `
+                                    <li class="paragraph-item">
+                                        <div class="paragraph-content">
+                                            ${p}
+                                        </div>
+                                    </li>
+                                `;
+                            }).join('')}
                         </ul>
                     </div>`;
             } catch (error) {
