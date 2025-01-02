@@ -30,6 +30,18 @@
             margin-top: 20px;
             white-space: pre-wrap;
         }
+        .paragraph-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .paragraph-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -86,8 +98,12 @@
                         </div>
                         
                         <h4>Znalezione paragrafy (${data.paragraphs.length}):</h4>
-                        <ul>
-                            ${data.paragraphs.map(p => `<li>${p.substring(0, 100)}${p.length > 100 ? '...' : ''}</li>`).join('')}
+                        <ul class="paragraph-list">
+                            ${data.paragraphs.map(p => `
+                                <li class="paragraph-item">
+                                    ${p}
+                                </li>
+                            `).join('')}
                         </ul>
                     </div>`;
             } catch (error) {
