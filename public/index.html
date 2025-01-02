@@ -70,6 +70,63 @@
             font-weight: bold;
             color: #555;
         }
+
+        .skill-item {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 15px;
+            align-items: start;
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .skill-label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .skill-content {
+            color: #34495e;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.2em;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .experience-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .experience-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .experience-content {
+            color: #34495e;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -126,9 +183,15 @@
                         </div>
                         
                         <h4>Znalezione paragrafy (${data.paragraphs.length}):</h4>
+                        <div class="section-title">Informacje kontaktowe</div>
                         <ul class="paragraph-list">
                             ${data.paragraphs.map(p => {
                                 const isContactInfo = p.includes(':');
+                                
+                                const skillKeywords = ['Automation:', 'Server Administration:', 'CI/CD Systems:', 'Networking:', 'No-Code Automation:'];
+                                const isSkill = skillKeywords.some(keyword => p.startsWith(keyword));
+                                
+                                const isExperience = p.includes('experience') || p.includes('responsible for') || p.includes('working on');
                                 
                                 if (isContactInfo) {
                                     const [label, value] = p.split(':').map(s => s.trim());
@@ -140,26 +203,34 @@
                                     `;
                                 }
                                 
+                                if (isSkill) {
+                                    const [label, content] = p.split(':').map(s => s.trim());
+                                    return `
+                                        <li class="skill-item">
+                                            <div class="skill-label">${label}:</div>
+                                            <div class="skill-content">${content}</div>
+                                        </li>
+                                    `;
+                                }
+
+                                if (isExperience) {
+                                    return `
+                                        <li class="experience-item">
+                                            <div class="experience-title">Doświadczenie zawodowe</div>
+                                            <div class="experience-content">${p}</div>
+                                        </li>
+                                    `;
+                                }
+                                
                                 if (p.length > 100) {
                                     return `
                                         <li class="paragraph-item">
-                                            <div class="paragraph-header">
-                                                ${p.substring(0, p.indexOf(' ', 30))}...
-                                            </div>
                                             <div class="paragraph-content">
                                                 ${p}
                                             </div>
                                         </li>
                                     `;
                                 }
-                                
-                                return `
-                                    <li class="paragraph-item">
-                                        <div class="paragraph-content">
-                                            ${p}
-                                        </div>
-                                    </li>
-                                `;
                             }).join('')}
                         </ul>
                     </div>`;
