@@ -62,21 +62,44 @@ app.post('/scrape', async (req, res) => {
                 let paragraphs = [];
                 let element = header.nextElementSibling;
                 
+                // Szukamy tekstu w różnych elementach
                 while (element && !['H1', 'H2'].includes(element.tagName)) {
-                    if (element.tagName === 'P') {
-                        paragraphs.push(element.innerText);
+                    if (element.tagName === 'P' || 
+                        element.tagName === 'DIV' || 
+                        element.tagName === 'SPAN') {
+                        const text = element.innerText.trim();
+                        if (text) {
+                            paragraphs.push(element.innerText);
+                        }
                     }
                     element = element.nextElementSibling;
                 }
                 
+                // Jeśli nie znaleziono paragrafów, sprawdź tekst wewnątrz sekcji
+                if (paragraphs.length === 0) {
+                    const parentSection = header.closest('section') || header.parentElement;
+                    if (parentSection) {
+                        const texts = Array.from(parentSection.childNodes)
+                            .filter(node => 
+                                node !== header && 
+                                node.nodeType === 3 && 
+                                node.textContent.trim()
+                            )
+                            .map(node => node.textContent.trim());
+                        paragraphs.push(...texts);
+                    }
+                }
+
                 return {
                     title: header.innerText,
-                    paragraphs: paragraphs
+                    paragraphs: paragraphs.filter(p => p && p.trim().length > 0) // Usuń puste teksty
                 };
             });
 
             const links = Array.from(document.querySelectorAll('a[href]')).map(a => a.href);
             const images = Array.from(document.querySelectorAll('img')).map(img => img.src);
+            
+            console.log('Znalezione sekcje:', sections);
             
             return {
                 sections,
