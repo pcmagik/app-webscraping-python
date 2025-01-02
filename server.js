@@ -56,18 +56,32 @@ app.post('/scrape', async (req, res) => {
 
         console.log('Rozpoczynam ekstrakcję danych');
         const data = await page.evaluate(() => {
-            const titles = Array.from(document.querySelectorAll('h1, h2')).map(h => h.innerText);
+            // Zbieramy sekcje z nagłówkami i powiązanym tekstem
+            const sections = Array.from(document.querySelectorAll('h1, h2')).map(header => {
+                // Znajdujemy wszystkie paragrafy do następnego nagłówka
+                let paragraphs = [];
+                let element = header.nextElementSibling;
+                
+                while (element && !['H1', 'H2'].includes(element.tagName)) {
+                    if (element.tagName === 'P') {
+                        paragraphs.push(element.innerText);
+                    }
+                    element = element.nextElementSibling;
+                }
+                
+                return {
+                    title: header.innerText,
+                    paragraphs: paragraphs
+                };
+            });
+
             const links = Array.from(document.querySelectorAll('a[href]')).map(a => a.href);
             const images = Array.from(document.querySelectorAll('img')).map(img => img.src);
-            const paragraphs = Array.from(document.querySelectorAll('p')).map(p => p.innerText);
-            
-            console.log(`Znaleziono ${titles.length} nagłówków, ${links.length} linków i ${images.length} obrazów`);
             
             return {
-                titles,
+                sections,
                 links,
                 images,
-                paragraphs,
                 url: window.location.href
             };
         });
