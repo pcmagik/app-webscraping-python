@@ -56,53 +56,16 @@ app.post('/scrape', async (req, res) => {
 
         console.log('Rozpoczynam ekstrakcję danych');
         const data = await page.evaluate(() => {
-            // Zbieramy sekcje z nagłówkami i powiązanym tekstem
-            const sections = Array.from(document.querySelectorAll('h1, h2')).map(header => {
-                // Znajdujemy wszystkie paragrafy do następnego nagłówka
-                let paragraphs = [];
-                let element = header.nextElementSibling;
-                
-                // Szukamy tekstu w różnych elementach
-                while (element && !['H1', 'H2'].includes(element.tagName)) {
-                    if (element.tagName === 'P' || 
-                        element.tagName === 'DIV' || 
-                        element.tagName === 'SPAN') {
-                        const text = element.innerText.trim();
-                        if (text) {
-                            paragraphs.push(element.innerText);
-                        }
-                    }
-                    element = element.nextElementSibling;
-                }
-                
-                // Jeśli nie znaleziono paragrafów, sprawdź tekst wewnątrz sekcji
-                if (paragraphs.length === 0) {
-                    const parentSection = header.closest('section') || header.parentElement;
-                    if (parentSection) {
-                        const texts = Array.from(parentSection.childNodes)
-                            .filter(node => 
-                                node !== header && 
-                                node.nodeType === 3 && 
-                                node.textContent.trim()
-                            )
-                            .map(node => node.textContent.trim());
-                        paragraphs.push(...texts);
-                    }
-                }
-
-                return {
-                    title: header.innerText,
-                    paragraphs: paragraphs.filter(p => p && p.trim().length > 0) // Usuń puste teksty
-                };
-            });
-
+            const titles = Array.from(document.querySelectorAll('h1, h2')).map(h => h.innerText);
+            const paragraphs = Array.from(document.querySelectorAll('p')).map(p => p.innerText);
             const links = Array.from(document.querySelectorAll('a[href]')).map(a => a.href);
             const images = Array.from(document.querySelectorAll('img')).map(img => img.src);
             
-            console.log('Znalezione sekcje:', sections);
+            console.log(`Znaleziono ${titles.length} nagłówków, ${links.length} linków i ${images.length} obrazów`);
             
             return {
-                sections,
+                titles,
+                paragraphs,
                 links,
                 images,
                 url: window.location.href

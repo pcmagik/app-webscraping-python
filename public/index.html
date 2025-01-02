@@ -226,18 +226,20 @@
                 resultsDiv.innerHTML = `
                     <h3>Wyniki scrapowania</h3>
                     <div class="content-section">
-                        <div class="section-title">Sekcje (${data.sections.length})</div>
+                        <div class="section-title">Nagłówki (${data.titles.length})</div>
                         <div class="content-grid">
-                            ${data.sections.map(section => `
+                            ${data.titles.map(title => `
                                 <div class="content-item">
-                                    <div class="text-content">
-                                        <h3 style="margin-top: 0; color: #2c3e50; margin-bottom: 15px;">
-                                            ${section.title}
-                                        </h3>
-                                        ${section.paragraphs.map(p => `
-                                            <p style="margin: 10px 0;">${p}</p>
-                                        `).join('')}
-                                    </div>
+                                    <div class="text-content">${title}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="section-title">Paragrafy (${data.paragraphs.length})</div>
+                        <div class="content-grid">
+                            ${data.paragraphs.map(p => `
+                                <div class="content-item">
+                                    <div class="text-content">${p}</div>
                                 </div>
                             `).join('')}
                         </div>
